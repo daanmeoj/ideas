@@ -9,43 +9,86 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Scanner scanner=new Scanner(System.in);
         int principal;
-        float anualRate,monthlyRate;
-        int period, monthlyPeriod;
+        float aRate;
+        byte yPeriod;
+        NumberFormat currency=NumberFormat.getCurrencyInstance();
+        principal=(int)readNumber("Principal($1K-$1M): ",1000,1_000_000);
+        aRate=(float)readNumber("Annual Interest mRate: ",1,30);
+        yPeriod=(byte)readNumber("Period(Years): ",1,30);
+        double mortgage=calculateMortgage(principal,aRate,yPeriod);
+        printMortgage(currency, mortgage);
+        printPayment(principal, aRate, yPeriod, currency);
+
+
+    }
+
+    private static void printMortgage(NumberFormat currency, double mortgage) {
+        System.out.println();
+        System.out.println("MORTGAGE");
+        System.out.println("--------");
+        System.out.print("Monthly payments: "+ currency.format(mortgage));
+    }
+
+    private static void printPayment(int principal, float aRate, byte yPeriod, NumberFormat currency) {
+        System.out.println();
+        System.out.println("PAYMENT SCHEDULE");
+        System.out.println("----------------");
+        for(short month = 1; month<=calculateMPeriod(yPeriod); month++){
+            System.out.println(currency.format(obtainPaymentSchedule(principal, aRate, yPeriod,month)));
+        }
+    }
+
+    public static double obtainPaymentSchedule(
+            int L,
+            float annualInterest,
+            byte years,
+            int NumberOfPaymentsMade){
+        int n=calculateMPeriod(years);
+        float c=calculateMRate(annualInterest);
+        double B;
+        int p=NumberOfPaymentsMade;
+        B=L*(Math.pow(1+c,n)-Math.pow(1+c,p))/(Math.pow(1+c,n)-1);
+        return B;
+    }
+
+    public static double calculateMortgage(
+            int principal,
+            float annualInterest,
+            byte years){
+
+
+        int mPeriod=calculateMPeriod(years);
+        float mRate=calculateMRate(annualInterest);
+        return principal
+                *mRate*Math.pow(1+mRate,mPeriod)
+                /(Math.pow(1+mRate,mPeriod)-1);
+    }
+
+    public  static double readNumber(String prompt,double min, double max){
+        Scanner scanner=new Scanner(System.in);
+        double value;
+        while(true){
+            System.out.print(prompt);
+            value=scanner.nextFloat();
+            if(value>=min && value<=max){
+                return  value;
+            }
+
+            System.out.println("Enter a value between "+min+ "and"+max);
+        }
+
+    }
+
+
+    public static int calculateMPeriod(int years){
+        final byte MONTHS_IN_YEARS=12;
+        return years*MONTHS_IN_YEARS;
+    }
+
+    public static float calculateMRate(float annualInterest){
         final byte PERCENT=100;
         final byte MONTHS_IN_YEARS=12;
-        NumberFormat currency=NumberFormat.getCurrencyInstance();
-        do{
-            System.out.print("Principal($1K-$1M): ");
-            principal=scanner.nextInt();
-            if(principal>=1000 && principal<=1000000)
-                break;
-            System.out.println("Enter a number between 1,000 and 1,000,000");
-        }while(true);
-
-        do{
-            System.out.print("Annual Interest anualRate: ");
-            monthlyRate=scanner.nextFloat();
-            anualRate=monthlyRate/PERCENT/MONTHS_IN_YEARS;
-            if(monthlyRate>0 && monthlyRate<=30)
-                break;
-            System.out.println("Enter a number greater than 0 or less than or equal to 30");
-        }while(true);
-
-        do{
-            System.out.print("Period(Years): ");
-            monthlyPeriod=scanner.nextByte();
-            period=monthlyPeriod*MONTHS_IN_YEARS;
-            if(monthlyPeriod>=1 && monthlyPeriod<=30)
-                break;
-            System.out.println("Enter a value between 1 and 30");
-        }while(true);
-
-        double mortgagePayment=principal
-                *anualRate*Math.pow(1+anualRate,period)
-                /(Math.pow(1+anualRate,period)-1);
-        System.out.print(currency.format(mortgagePayment));
-
+        return annualInterest/PERCENT/MONTHS_IN_YEARS;
     }
 }

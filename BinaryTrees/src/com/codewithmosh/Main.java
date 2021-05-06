@@ -12,6 +12,8 @@ public class Main {
         tree.insert(6);
         tree.insert(8);
         tree.insert(10);
-        System.out.println(tree.find(20));
+        //tree.traversePreOrder();
+        //tree.traverseInOrder();
+        tree.traversePostOrder();
     }
 }

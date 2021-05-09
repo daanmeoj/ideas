@@ -1,6 +1,11 @@
 package com.codewithmosh;
 
+import com.sun.source.tree.IfTree;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Graph {
     private class Node{
@@ -15,8 +20,26 @@ public class Graph {
             return label;
         }
     }
+
+    private class leaderCounter{
+        private int counter;
+
+        public leaderCounter(int counter) {
+            this.counter = counter;
+        }
+
+        public void setCounter(int counter) {
+            this.counter = counter;
+        }
+
+        public int getCounter() {
+            return counter;
+        }
+    }
+
     private Map<String,Node> nodes=new HashMap<>();
     private Map<Node,List<Node>> adjacencyList=new HashMap<>();
+
 
     public void addNode(String label){
         var node=new Node(label);
@@ -127,8 +150,9 @@ public class Graph {
         Stack<Node> stack=new Stack<>();
         Set<Node> visited = new HashSet<>();
 
-        for (var node:nodes.values())
-                topologicalSort(node, visited,stack);
+        for (var node:nodes.values()){
+            topologicalSort(node, visited,stack);
+        }
 
         List<String> sorted=new ArrayList<>();
         while (!stack.isEmpty())
@@ -137,9 +161,12 @@ public class Graph {
     }
 
 
-    private void topologicalSort(Node node, Set<Node> visited, Stack<Node> stack){
-        if (visited.contains(node))
+
+    private void topologicalSort(Node node, Set<Node> visited, Stack<Node> stack) {
+        if (visited.contains(node)){
             return;
+        }
+
         visited.add(node);
 
         for(var neighbour:adjacencyList.get(node)){
@@ -148,5 +175,38 @@ public class Graph {
         }
 
         stack.push(node);
+    }
+
+    public boolean hasCycle(){
+        Set<Node> all=new HashSet<>();
+        all.addAll(nodes.values());
+        Set<Node> visiting=new HashSet<>();
+        Set<Node> visited=new HashSet<>();
+
+        while (!all.isEmpty()){
+            var current=all.iterator().next();
+            if (hasCycle(current,all,visiting,visited))
+                return true;
+        }
+    return false;
+    }
+
+    private boolean hasCycle(Node node, Set<Node> all,
+                             Set<Node> visiting,Set<Node> visited){
+        all.remove(node);
+        visiting.add(node);
+
+        for(var neighbour:adjacencyList.get(node)){
+            if(visited.contains(neighbour))
+                continue;
+            if(visiting.contains(neighbour))
+                return true;
+            if(hasCycle(neighbour,all,visiting,visited))
+                return true;
+        }
+
+        visiting.remove(node);
+        visited.add(node);
+        return false;
     }
 }

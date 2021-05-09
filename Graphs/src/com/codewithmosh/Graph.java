@@ -21,30 +21,18 @@ public class Graph {
         }
     }
 
-    private class leaderCounter{
-        private int counter;
-
-        public leaderCounter(int counter) {
-            this.counter = counter;
-        }
-
-        public void setCounter(int counter) {
-            this.counter = counter;
-        }
-
-        public int getCounter() {
-            return counter;
-        }
-    }
-
     private Map<String,Node> nodes=new HashMap<>();
     private Map<Node,List<Node>> adjacencyList=new HashMap<>();
-
+    private int count=0;
 
     public void addNode(String label){
         var node=new Node(label);
         nodes.putIfAbsent(label,node);
-        adjacencyList.putIfAbsent(node,new ArrayList<>());
+        boolean keyLabelExists=adjacencyList.keySet().stream()
+                                        .anyMatch((key)->key.toString().equals(node.label));
+        if(!keyLabelExists)
+            adjacencyList.put(node,new ArrayList<>());
+
     }
 
     public void addEdge(String from,String to){
@@ -209,4 +197,75 @@ public class Graph {
         visited.add(node);
         return false;
     }
+
+    public Stack<Node> obtainMagicalOrdering(){
+
+        Stack<Node> stack=new Stack<>();
+        Set<Node> visited = new HashSet<>();
+
+        for (var node:nodes.values()){
+            obtainMagicalOrdering(node, visited,stack);
+        }
+
+        return stack;
+    }
+
+
+
+    private void obtainMagicalOrdering(Node node, Set<Node> visited, Stack<Node> stack) {
+        if (visited.contains(node)){
+            return;
+        }
+
+        visited.add(node);
+
+        for(var neighbour:adjacencyList.get(node)){
+            if(!visited.contains(node))
+                obtainMagicalOrdering(neighbour,visited,stack);
+        }
+
+        stack.push(node);
+    }
+
+    public Map<String,Integer> traverseDepthFirstForKosaraju(Stack<Node> magicalOrdering){
+
+        Stack<Node> stack=new Stack<>();
+        Set<Node> visited = new HashSet<>();
+        Map<String,Integer> leaders=new HashMap<>();
+        while(!magicalOrdering.isEmpty()){
+            var node=magicalOrdering.pop();
+            traverseDepthFirstForKosaraju(node, visited,stack);
+            if(count!=0)
+                leaders.put(node.label,count);
+            System.out.println(count);
+            count=0;
+        }
+        return leaders;
+
+    }
+
+
+
+    private void traverseDepthFirstForKosaraju(Node node, Set<Node> visited, Stack<Node> stack) {
+        var filterNode=adjacencyList.keySet().stream()
+                .filter((key)->key.toString().equals(node.label)).findFirst().get();
+
+        if (visited.contains(filterNode)){
+            return;
+        }
+
+
+
+        visited.add(filterNode);
+        for(var neighbour:adjacencyList.get(filterNode)){
+            if(!visited.contains(neighbour)){
+                traverseDepthFirstForKosaraju(neighbour,visited,stack);
+            }
+
+        }
+
+        stack.push(filterNode);
+        count++;
+    }
+
 }

@@ -227,8 +227,8 @@ public class Graph {
             if(!visited.contains(neighbour))
                 obtainMagicalOrdering(neighbour,visited,stack);
         }
-
-        stack.push(node);
+        System.out.println(filterNode);
+        stack.push(filterNode);
     }
 
     public Map<String,Integer> traverseDepthFirstForKosaraju(Stack<Node> magicalOrdering){
@@ -241,7 +241,7 @@ public class Graph {
             traverseDepthFirstForKosaraju(node, visited,stack);
             if(count!=0)
                 leaders.put(node.label,count);
-            //System.out.println(count);
+            //System.out.println("count: "+count);
             count=0;
         }
         return leaders;
@@ -257,9 +257,6 @@ public class Graph {
         if (visited.contains(filterNode)){
             return;
         }
-
-
-
         visited.add(filterNode);
         for(var neighbour:adjacencyList.get(filterNode)){
             if(!visited.contains(neighbour)){
@@ -269,7 +266,10 @@ public class Graph {
         }
 
         stack.push(filterNode);
+        //System.out.println(filterNode);
         count++;
     }
+
+
 
 }

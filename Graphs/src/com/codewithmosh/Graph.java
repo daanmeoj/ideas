@@ -236,7 +236,10 @@ public class Graph {
         Stack<String> outStack=new Stack<>();
         Set<String> visited = new HashSet<>();
 
-        for (var node:nodes.values()){
+        var sizeOfValues=nodes.values().size();
+        var arrayOfValues=nodes.values().toArray();
+        for (int i=sizeOfValues-1;i>0;i--){
+            var node=(String)arrayOfValues[i];
             obtainMagicalOrderingIterative(node, visited,stack,outStack);
         }
 

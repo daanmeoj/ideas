@@ -2,6 +2,7 @@ package com.codewithmosh;
 
 import java.io.*;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 
@@ -13,12 +14,11 @@ public class Main {
 
         try{
             BufferedReader br=new BufferedReader(
-                    new FileReader( "/home/davidmercado/IdeaProjects/Graphs/input/test1.txt"));
+                    new FileReader( "/home/davidmercado/IdeaProjects/Graphs/input/SCC.txt"));
 
 
 
             String s,tail,head;
-            int counter=1;
             while ((s=br.readLine())!=null){
                 tail=s.split(" ")[0];
                 head=s.split(" ")[1];
@@ -27,33 +27,34 @@ public class Main {
                 graphRev.addEdge(head,tail);
             }
 
-            var magicalOrdering=graphRev.obtainMagicalOrdering();
-
+            var magicalOrderingIter=graphRev.obtainMagicalOrderingIterative();
+            System.out.println(magicalOrderingIter.size());
             br=new BufferedReader(
-                    new FileReader( "/home/davidmercado/IdeaProjects/Graphs/input/test1.txt"));
+                    new FileReader( "/home/davidmercado/IdeaProjects/Graphs/input/SCC.txt"));
 
 
-            graphRev=new Graph();
+            //graphRev=new Graph();
             var graph=new Graph();
-            counter=0;
             while ((s=br.readLine())!=null){
                 tail=s.split(" ")[0];
                 head=s.split(" ")[1];
                 graph.addNode(tail);
                 graph.addNode(head);
                 graph.addEdge(tail,head);
-
             }
-
-            var leaders=graph.traverseDepthFirstForKosaraju(magicalOrdering);
+            var leaders=graph.traverseDepthFirstForKosarajuIterative(magicalOrderingIter);
+            var total=leaders.values().stream().reduce((a,b)->a+b);
+            System.out.println(total);
             var result=leaders
                     .values().stream().sorted((a,b)->b-a).toArray();
             System.out.println("final result:");
+
             System.out.println(result[0]);
             System.out.println(result[1]);
             System.out.println(result[2]);
             System.out.println(result[3]);
             System.out.println(result[4]);
+
 
             br.close();
         }catch(Exception ex){

@@ -21,17 +21,18 @@ public class Graph {
         }
     }
 
-    private Map<String,Node> nodes=new HashMap<>();
-    private Map<Node,List<Node>> adjacencyList=new HashMap<>();
-    private int count=0;
+    private Map<String,String> nodes=new HashMap<>();
+    private Map<String,List<String>> adjacencyList=new HashMap<>();
+    private Integer count=0;
 
     public void addNode(String label){
-        var node=new Node(label);
-        nodes.putIfAbsent(label,node);
-        boolean keyLabelExists=adjacencyList.keySet().stream()
-                .anyMatch((key)->key.toString().equals(node.label));
-        if(!keyLabelExists)
-            adjacencyList.put(node,new ArrayList<>());
+        //var node=new Node(label);
+        var node=label;
+        nodes.putIfAbsent(label,label);
+//        boolean keyLabelExists=adjacencyList.keySet().stream()
+//                .anyMatch((key)->key.toString().equals(node));
+//        if(!keyLabelExists)
+        adjacencyList.putIfAbsent(node,new ArrayList<>());
 
     }
 
@@ -79,7 +80,7 @@ public class Graph {
         traverseDepthFirstRec(nodes.get(root),new HashSet<>());
     }
 
-    private void traverseDepthFirstRec(Node root, Set<Node> visited){
+    private void traverseDepthFirstRec(String root, Set<String> visited){
         System.out.println(root);
         visited.add(root);
 
@@ -93,9 +94,9 @@ public class Graph {
         var node=nodes.get(root);
         if(node==null)
             return;;
-        Set<Node> visited=new HashSet<>();
+        Set<String> visited=new HashSet<>();
 
-        Stack<Node> stack=new Stack<>();
+        Stack<String> stack=new Stack<>();
         stack.push(node);
 
         while (!stack.isEmpty()){
@@ -116,8 +117,8 @@ public class Graph {
         if (node == null)
             return;
 
-        Set<Node> visited = new HashSet<>();
-        Queue<Node> queue=new ArrayDeque<>();
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue=new ArrayDeque<>();
         queue.add(node);
 
         while (!queue.isEmpty()){
@@ -135,8 +136,8 @@ public class Graph {
 
     public List<String> topologicalSort(){
 
-        Stack<Node> stack=new Stack<>();
-        Set<Node> visited = new HashSet<>();
+        Stack<String> stack=new Stack<>();
+        Set<String> visited = new HashSet<>();
 
         for (var node:nodes.values()){
             topologicalSort(node, visited,stack);
@@ -144,13 +145,13 @@ public class Graph {
 
         List<String> sorted=new ArrayList<>();
         while (!stack.isEmpty())
-            sorted.add(stack.pop().label);
+            sorted.add(stack.pop());
         return sorted;
     }
 
 
 
-    private void topologicalSort(Node node, Set<Node> visited, Stack<Node> stack) {
+    private void topologicalSort(String node, Set<String> visited, Stack<String> stack) {
         if (visited.contains(node)){
             return;
         }
@@ -166,10 +167,10 @@ public class Graph {
     }
 
     public boolean hasCycle(){
-        Set<Node> all=new HashSet<>();
+        Set<String> all=new HashSet<>();
         all.addAll(nodes.values());
-        Set<Node> visiting=new HashSet<>();
-        Set<Node> visited=new HashSet<>();
+        Set<String> visiting=new HashSet<>();
+        Set<String> visited=new HashSet<>();
 
         while (!all.isEmpty()){
             var current=all.iterator().next();
@@ -179,8 +180,8 @@ public class Graph {
         return false;
     }
 
-    private boolean hasCycle(Node node, Set<Node> all,
-                             Set<Node> visiting,Set<Node> visited){
+    private boolean hasCycle(String node, Set<String> all,
+                             Set<String> visiting,Set<String> visited){
         all.remove(node);
         visiting.add(node);
 
@@ -198,10 +199,10 @@ public class Graph {
         return false;
     }
 
-    public Stack<Node> obtainMagicalOrdering(){
+    public Stack<String> obtainMagicalOrdering(){
 
-        Stack<Node> stack=new Stack<>();
-        Set<Node> visited = new HashSet<>();
+        Stack<String> stack=new Stack<>();
+        Set<String> visited = new HashSet<>();
 
         for (var node:nodes.values()){
             obtainMagicalOrdering(node, visited,stack);
@@ -212,10 +213,9 @@ public class Graph {
 
 
 
-    private void obtainMagicalOrdering(Node node, Set<Node> visited, Stack<Node> stack) {
+    private void obtainMagicalOrdering(String node, Set<String> visited, Stack<String> stack) {
 
-        var filterNode=adjacencyList.keySet().stream()
-                .filter((key)->key.toString().equals(node.label)).findFirst().get();
+        var filterNode=node;
 
         if (visited.contains(filterNode)){
             return;
@@ -227,21 +227,54 @@ public class Graph {
             if(!visited.contains(neighbour))
                 obtainMagicalOrdering(neighbour,visited,stack);
         }
-        System.out.println(filterNode);
         stack.push(filterNode);
     }
 
-    public Map<String,Integer> traverseDepthFirstForKosaraju(Stack<Node> magicalOrdering){
+    public Stack<String> obtainMagicalOrderingIterative(){
 
-        Stack<Node> stack=new Stack<>();
-        Set<Node> visited = new HashSet<>();
+        Stack<String> stack=new Stack<>();
+        Stack<String> outStack=new Stack<>();
+        Set<String> visited = new HashSet<>();
+
+        for (var node:nodes.values()){
+            obtainMagicalOrderingIterative(node, visited,stack,outStack);
+        }
+
+        return outStack;
+    }
+
+    private void obtainMagicalOrderingIterative(String node, Set<String> visited,
+                                                Stack<String> stack,Stack<String> outStack) {
+
+        if(visited.contains(node))
+            return;
+        stack.push(node);
+
+        while (!stack.isEmpty()){
+            var current=stack.pop();
+            if(!visited.contains(current)){
+                outStack.push(current);
+                visited.add(current);
+                for (var neighbour:adjacencyList.get(current)){
+                    if(!visited.contains(neighbour)){
+                        stack.push(neighbour);
+                    }
+                }
+            }
+
+        }
+    }
+
+    public Map<String,Integer> traverseDepthFirstForKosaraju(Stack<String> magicalOrdering){
+
+        Stack<String> stack=new Stack<>();
+        Set<String> visited = new HashSet<>();
         Map<String,Integer> leaders=new HashMap<>();
         while(!magicalOrdering.isEmpty()){
             var node=magicalOrdering.pop();
             traverseDepthFirstForKosaraju(node, visited,stack);
             if(count!=0)
-                leaders.put(node.label,count);
-            //System.out.println("count: "+count);
+                leaders.put(node,count);
             count=0;
         }
         return leaders;
@@ -250,9 +283,8 @@ public class Graph {
 
 
 
-    private void traverseDepthFirstForKosaraju(Node node, Set<Node> visited, Stack<Node> stack) {
-        var filterNode=adjacencyList.keySet().stream()
-                .filter((key)->key.toString().equals(node.label)).findFirst().get();
+    private void traverseDepthFirstForKosaraju(String node, Set<String> visited, Stack<String> stack) {
+        var filterNode=node;
 
         if (visited.contains(filterNode)){
             return;
@@ -264,12 +296,49 @@ public class Graph {
             }
 
         }
-
         stack.push(filterNode);
-        //System.out.println(filterNode);
         count++;
     }
 
+    public Map<String,Integer> traverseDepthFirstForKosarajuIterative(Stack<String> magicalOrdering){
 
+        Stack<String> stack=new Stack<>();
+        Set<String> visited = new HashSet<>();
+        Map<String,Integer> leaders=new HashMap<>();
+        while(!magicalOrdering.isEmpty()){
+            var node=magicalOrdering.pop();
+            traverseDepthFirstForKosarajuIterative(node, visited,stack);
+            if(count>0)
+                leaders.putIfAbsent(node,count);
+            count=0;
+        }
+        return leaders;
+
+    }
+
+
+
+    private void traverseDepthFirstForKosarajuIterative(String node, Set<String> visited, Stack<String> stack) {
+
+
+        if(visited.contains(node))
+            return;
+        stack.push(node);
+
+        while (!stack.isEmpty()){
+            var current=stack.pop();
+            if(!visited.contains(current)){
+                visited.add(current);
+                count+=1;
+
+                for (var neighbour:adjacencyList.get(current)){
+                    if(!visited.contains(neighbour)){
+                        stack.push(neighbour);
+                    }
+                }
+            }
+
+        }
+    }
 
 }

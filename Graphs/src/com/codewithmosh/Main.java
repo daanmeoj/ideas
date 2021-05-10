@@ -25,12 +25,10 @@ public class Main {
                 graphRev.addNode(head);
                 graphRev.addNode(tail);
                 graphRev.addEdge(head,tail);
-                System.out.println(counter+" head: "+head+"->tail: "+tail);
-                counter++;
             }
 
             var magicalOrdering=graphRev.obtainMagicalOrdering();
-            System.out.println(magicalOrdering.size());
+
             br=new BufferedReader(
                     new FileReader( "/home/davidmercado/IdeaProjects/Graphs/input/test1.txt"));
 
@@ -44,8 +42,7 @@ public class Main {
                 graph.addNode(tail);
                 graph.addNode(head);
                 graph.addEdge(tail,head);
-                System.out.println(counter+" tail: "+tail+"->head: "+head);
-                counter++;
+
             }
 
             var leaders=graph.traverseDepthFirstForKosaraju(magicalOrdering);

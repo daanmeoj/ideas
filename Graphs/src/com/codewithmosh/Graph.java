@@ -29,7 +29,7 @@ public class Graph {
         var node=new Node(label);
         nodes.putIfAbsent(label,node);
         boolean keyLabelExists=adjacencyList.keySet().stream()
-                                        .anyMatch((key)->key.toString().equals(node.label));
+                .anyMatch((key)->key.toString().equals(node.label));
         if(!keyLabelExists)
             adjacencyList.put(node,new ArrayList<>());
 
@@ -73,10 +73,10 @@ public class Graph {
     }
 
     public void traverseDepthFirstRec(String root){
-            var node=nodes.get(root);
-            if(node==null)
-                return;;
-            traverseDepthFirstRec(nodes.get(root),new HashSet<>());
+        var node=nodes.get(root);
+        if(node==null)
+            return;;
+        traverseDepthFirstRec(nodes.get(root),new HashSet<>());
     }
 
     private void traverseDepthFirstRec(Node root, Set<Node> visited){
@@ -176,7 +176,7 @@ public class Graph {
             if (hasCycle(current,all,visiting,visited))
                 return true;
         }
-    return false;
+        return false;
     }
 
     private boolean hasCycle(Node node, Set<Node> all,
@@ -213,14 +213,18 @@ public class Graph {
 
 
     private void obtainMagicalOrdering(Node node, Set<Node> visited, Stack<Node> stack) {
-        if (visited.contains(node)){
+
+        var filterNode=adjacencyList.keySet().stream()
+                .filter((key)->key.toString().equals(node.label)).findFirst().get();
+
+        if (visited.contains(filterNode)){
             return;
         }
 
-        visited.add(node);
+        visited.add(filterNode);
 
-        for(var neighbour:adjacencyList.get(node)){
-            if(!visited.contains(node))
+        for(var neighbour:adjacencyList.get(filterNode)){
+            if(!visited.contains(neighbour))
                 obtainMagicalOrdering(neighbour,visited,stack);
         }
 
@@ -237,7 +241,7 @@ public class Graph {
             traverseDepthFirstForKosaraju(node, visited,stack);
             if(count!=0)
                 leaders.put(node.label,count);
-            System.out.println(count);
+            //System.out.println(count);
             count=0;
         }
         return leaders;

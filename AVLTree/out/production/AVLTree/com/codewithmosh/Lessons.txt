@@ -1,0 +1,31 @@
+*Init
+10 root
+    20 (-1) newRoot
+       30
+leftRotate(10)
+*Init
+10 root
+    20 (-1) newRoot
+15       30
+
+newRoot=root.right
+root.right=newRoot.left
+newRoot.left=root
+reset height of root/newRoot
+    20
+10      30
+    15
+
+
+*Init
+10
+    30 (1) balanceFactor(root.righChild)>0
+20
+rightRotate(30)
+10
+    20
+        30
+leftRotate(10)
+    20
+10      30
+

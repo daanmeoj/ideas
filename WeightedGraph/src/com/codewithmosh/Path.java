@@ -7,8 +7,18 @@ public class Path {
 
     private List<String> nodes=new ArrayList<>();
 
+    private  int distance=Integer.MAX_VALUE;
+
     public void add(String node){
         nodes.add(node);
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     @Override

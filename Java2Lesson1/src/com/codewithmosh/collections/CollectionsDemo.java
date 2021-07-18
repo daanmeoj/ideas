@@ -3,20 +3,25 @@ package com.codewithmosh.collections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class CollectionsDemo {
     public static void show(){
-        Collection<String> collection=new ArrayList<>();
-        Collections.addAll(collection,"a","b","c");
-        collection.remove("a");
-        System.out.println(collection.contains("b"));
-        var objectArray=collection.toArray();
-        var stringArray=collection.toArray(new String[0]);
-        System.out.println(collection);
-        System.out.println(collection.size());
-        Collection<String> other=new ArrayList<>();
-        other.addAll(collection);
-        System.out.println(collection==other);
-        System.out.println(collection.equals(other));
+        List<String> list=new ArrayList<>();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        list.add(0,"!");
+        Collections.addAll(list,"aa","bb","cc");
+        System.out.println(list);
+        list.set(0,"+a");
+        list.remove(2);
+        System.out.println(list);
+        System.out.println(list.get(0));
+        System.out.println(list.indexOf("aa"));
+        list.add("c");
+        System.out.println(list);
+        System.out.println(list.lastIndexOf("c"));
+        System.out.println(list.subList(0,2));
     }
 }
